@@ -98,9 +98,11 @@ public class MainActivity extends AppCompatActivity {
     public class AnimThread extends Thread{
         @Override
         public void run(){
+
             int index = 0;
             while (true){
                 File file = new File(URL + contentsVO.get(index).getFileName());
+                System.out.println(String.valueOf(file));
                 int finalIndex = index;
                 mainHandler.post(new Runnable() {
                     @Override

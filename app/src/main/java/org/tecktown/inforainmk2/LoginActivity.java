@@ -2,6 +2,7 @@ package org.tecktown.inforainmk2;
 
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
@@ -33,6 +34,7 @@ import org.tecktown.inforainmk2.VO.ContentsVO;
 import org.tecktown.inforainmk2.VO.FtpInfoDto;
 import org.tecktown.inforainmk2.VO.ResultCode;
 import org.tecktown.inforainmk2.VO.values;
+import org.w3c.dom.Text;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -95,7 +97,7 @@ public class LoginActivity extends AppCompatActivity {
         butSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                HttpRequest httpRequest = new HttpRequest("POST", "http://dbs267.iptime.org:8080/client/connect", handler);
+                HttpRequest httpRequest = new HttpRequest("POST", "http://192.168.0.207:8080/client/connect", handler);
                 String json = "{\"stbId\":\"" + id.getText().toString() + "\", \"stbPw\":\"" + pw.getText().toString() + "\"}";
                 httpRequest.setBody(json);
                 httpRequest.start();
@@ -123,7 +125,7 @@ public class LoginActivity extends AppCompatActivity {
         ftp = gson.fromJson(jsonObject, ResultCode.class);
 
         if (ftp != null) {
-            HttpRequest httpRequest2 = new HttpRequest("GET", "http://dbs267.iptime.org:8080/client/contents/1", handler1);
+            HttpRequest httpRequest2 = new HttpRequest("GET", "http://192.168.0.207:8080/client/contents/1", handler1);
             httpRequest2.setBody("1");
             httpRequest2.start();
 
@@ -155,8 +157,9 @@ public class LoginActivity extends AppCompatActivity {
     void show() {
         LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         LinearLayout loginLayout = (LinearLayout) vi.inflate(R.layout.login_alert, null);
-        //  ContentsVO contents = new ContentsVO();
-//                Log.d("contents", );
+
+        new AlertDialog.Builder(this).setTitle("Login Success").setView(loginLayout).show();
+
         Log.d("ftp user", ftp.getFtpIP() + ftp.getFtpPORT() + ftp.getFtpUser() + ftp.getFtpPw());
         new Thread(new Runnable() {
             @Override
@@ -169,14 +172,12 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }).start();
 
-//        Show2();
-
-    }
 
 //    private void Show2() {
 //        LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 //        LinearLayout loginLayout = (LinearLayout) vi.inflate(R.layout.login_alert, null);
-//
-//    }
+
+    }
+    }
 }
 
