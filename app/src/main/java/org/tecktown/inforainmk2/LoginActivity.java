@@ -161,15 +161,17 @@ public class LoginActivity extends AppCompatActivity {
         new AlertDialog.Builder(this).setTitle("Login Success").setView(loginLayout).show();
 
         Log.d("ftp user", ftp.getFtpIP() + ftp.getFtpPORT() + ftp.getFtpUser() + ftp.getFtpPw());
+
         new Thread(new Runnable() {
             @Override
             public void run() {
+                synchronized (this){
                 ftPclient.ftpConnect(ftp.getFtpIP(), ftp.getFtpPORT(), ftp.getFtpUser(), ftp.getFtpPw());
-
                 for (int i = 0; i < contentsVO.size(); i++) {
                     ftPclient.downloadFile(contentsVO.get(i).getFileName());
                     }
                 }
+            }
             }).start();
 
 
@@ -178,6 +180,4 @@ public class LoginActivity extends AppCompatActivity {
 //        LinearLayout loginLayout = (LinearLayout) vi.inflate(R.layout.login_alert, null);
 
     }
-    }
 }
-

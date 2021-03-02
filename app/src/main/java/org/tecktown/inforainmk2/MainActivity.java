@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
 //    private static final ArrayList<String> EXTENSION2 = new ArrayList<>(Arrays.asList(".mp4" , ".avi", ".wmv"));
     ImageView imageView2;
     VideoView videoView;
+    Bitmap bitmap;
 
     Handler mainHandler = new Handler();
     ArrayList<ContentsVO> contentsVO = LoginActivity.contentsVO;
@@ -81,9 +82,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        imageView2.setVisibility(View.INVISIBLE);
-        videoView.setVisibility(View.INVISIBLE);
-
         start = (ImageButton) findViewById(R.id.start);
         stop = (ImageButton) findViewById(R.id.stop);
 
@@ -98,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
     public class AnimThread extends Thread{
         @Override
         public void run(){
-
+            
             int index = 0;
             while (true){
                 File file = new File(URL + contentsVO.get(index).getFileName());
@@ -107,28 +105,37 @@ public class MainActivity extends AppCompatActivity {
                 mainHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        if (contentsVO.get(finalIndex).getFileType().equals("image")){
-                            imageView2.setVisibility(View.VISIBLE);
-                            Uri uri = Uri.parse(URL + contentsVO.get(finalIndex).getFileName());
-                            imageView2.setImageURI(uri);
-                        }else if (contentsVO.get(finalIndex).getFileType().equals("video")){
-                            videoView.setVisibility(View.VISIBLE);
-                            Uri uri = Uri.parse(URL + contentsVO.get(finalIndex).getFileName());
-                            videoView.setVideoURI(uri);
-                            videoView.requestFocus();
-                            videoView.start();
-
+                        synchronized (this) {
+                            if (contentsVO.get(finalIndex).getFileType().equals("image")) {
+                                videoView.setVisibility(View.INVISIBLE);
+                                Uri uri = Uri.parse(Environment.getExternalStorageDirectory().getAbsolutePath() + "/seongmin/" + contentsVO.get(finalIndex).getFileName());
+                                imageView2.setImageURI(uri);
+                                bitmap = BitmapFactory.decodeFile(String.valueOf(uri));
+                                imageView2.setImageBitmap(bitmap);
+                            } else if (contentsVO.get(finalIndex).getFileType().equals("video")) {
+                                VideoThread videoThread = new VideoThread();
+                                videoThread.run();
+                            }
                         }
                     }
                 });
-                index++;
+                ++index;
                 try {
                     if(contentsVO.get(index).getFileType().equals("image")){
-                        Thread.sleep(contentsVO.get(index).getPlayTime() * 1000);
+                        for (int i = 0; i<contentsVO.get(index).getPlayTime();i++)
+                        Thread.sleep(1000);
                     }
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    e.fillInStackTrace();
                 }
+            }
+        }
+    }
+    public class VideoThread extends Thread{
+        @Override
+        public void run(){
+            synchronized (this){
+
             }
         }
     }
