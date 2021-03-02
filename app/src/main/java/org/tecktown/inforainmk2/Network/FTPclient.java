@@ -80,14 +80,6 @@ public class FTPclient {
                     result = FTPClient.retrieveFile(remofile, fos);
                     fos.close();
                 }
-//           FTPFile files[] = FTPClient.listFiles();
-//            for (int i=0;i<files.length;i++){
-//                    f = new File(desDir + "/"+ files[i].getName());
-//                    FileOutputStream fos = new FileOutputStream(f);
-//                    FTPClient.retrieveFile(files[i].getName(),fos);
-//                    fos.close();
-//                    Log.d(TAG, files[i].getName());
-//                }
         } catch (IOException e) {
             e.printStackTrace();
         }

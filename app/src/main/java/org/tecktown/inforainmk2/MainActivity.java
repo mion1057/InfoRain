@@ -60,27 +60,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //비디오, 이미지뷰 선언
+        //이미지뷰 선언
         imageView2 = (ImageView) findViewById(R.id.Image);
-        videoView = (VideoView) findViewById(R.id.videoView);
-
-        //비디오 뷰를 커스텀 해주는 미디어 컨트롤러 객체 생성
-        MediaController mc = new MediaController(this);
-        videoView.setMediaController(mc);
-
-
-        videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            public void onPrepared(MediaPlayer player) {
-                Toast.makeText(getApplicationContext(), "동영상이 준비되었습니다.\n'재생' 버튼을 누르세요.", Toast.LENGTH_LONG).show();
-            }
-        });
-
-        videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            public void onCompletion(MediaPlayer player) {
-                Toast.makeText(getApplicationContext(), "동영상 재생이 완료되었습니다.", Toast.LENGTH_LONG).show();
-            }
-        });
-
 
         start = (ImageButton) findViewById(R.id.start);
         stop = (ImageButton) findViewById(R.id.stop);
@@ -96,11 +77,11 @@ public class MainActivity extends AppCompatActivity {
     public class AnimThread extends Thread{
         @Override
         public void run(){
-            
             int index = 0;
             while (true){
                 File file = new File(URL + contentsVO.get(index).getFileName());
                 System.out.println(String.valueOf(file));
+                System.out.println();
                 int finalIndex = index;
                 mainHandler.post(new Runnable() {
                     @Override
@@ -113,8 +94,24 @@ public class MainActivity extends AppCompatActivity {
                                 bitmap = BitmapFactory.decodeFile(String.valueOf(uri));
                                 imageView2.setImageBitmap(bitmap);
                             } else if (contentsVO.get(finalIndex).getFileType().equals("video")) {
-                                VideoThread videoThread = new VideoThread();
-                                videoThread.run();
+                                videoView.setVisibility(View.VISIBLE);
+                                // VideoView : 동영상을 재생하는 뷰
+                                VideoView vv = (VideoView) findViewById(R.id.videoView);
+
+                                // MediaController : 특정 View 위에서 작동하는 미디어 컨트롤러 객체
+                                MediaController mc = new MediaController(getApplicationContext());
+                                vv.setMediaController(mc); // Video View 에 사용할 컨트롤러 지정
+
+                                String path = Environment.getExternalStorageDirectory()
+                                        .getAbsolutePath(); // 기본적인 절대경로 얻어오기
+
+                                // 절대 경로 = SDCard 폴더 = "storage/emulated/0"
+                                Log.d("test", "절대 경로 : " + path);
+
+                                vv.setVideoPath(path+"/seongmin/"+contentsVO.get(finalIndex).getFileName());
+                                // VideoView 로 재생할 영상
+                                vv.requestFocus(); // 포커스 얻어오기
+                                vv.start(); // 동영상 재생
                             }
                         }
                     }
@@ -128,14 +125,10 @@ public class MainActivity extends AppCompatActivity {
                 } catch (InterruptedException e) {
                     e.fillInStackTrace();
                 }
-            }
-        }
-    }
-    public class VideoThread extends Thread{
-        @Override
-        public void run(){
-            synchronized (this){
-
+                if (index == 6){
+                    index = 0;
+                    continue;
+                }
             }
         }
     }
