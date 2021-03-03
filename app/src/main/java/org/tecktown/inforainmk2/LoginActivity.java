@@ -148,8 +148,8 @@ public class LoginActivity extends AppCompatActivity {
 
         show();
 
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
+//        Intent intent = new Intent(this, MainActivity.class);
+//        startActivity(intent);
 
 
     }

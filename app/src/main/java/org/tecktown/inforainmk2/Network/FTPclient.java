@@ -3,6 +3,8 @@ package org.tecktown.inforainmk2.Network;
 import android.os.Environment;
 import android.util.Log;
 
+
+import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.tecktown.inforainmk2.VO.ContentsVO;
 
@@ -13,13 +15,13 @@ import java.util.ArrayList;
 
 public class FTPclient {
     private final String TAG = "FTPUtil";
-    public static String desDir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/seongmin/" ;
+    public static String desDir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/seongmin/";
     public static String workDir = "/HDD1/publicFolder/inforain/Group1/";
-    FTPClient FTPClient= new FTPClient();
+    FTPClient FTPClient = new FTPClient();
     ContentsVO[] contentsVO;
 
 
-    public boolean ftpConnect(String server, int port, String id, String password){
+    public boolean ftpConnect(String server, int port, String id, String password) {
         boolean result = false;
 
 
@@ -28,8 +30,15 @@ public class FTPclient {
             FTPClient.setControlEncoding("UTF-8");
             FTPClient.connect(server, port);
             result = FTPClient.login(id, password);
+            FTPClient.setFileType(FTP.BINARY_FILE_TYPE);
+            FTPClient.setBufferSize(1024*1024);
+            FTPClient.setConnectTimeout(720000);
+            FTPClient.setDefaultTimeout(720000);
+            FTPClient.setKeepAlive(true);
+            FTPClient.setControlKeepAliveReplyTimeout(3000);
+            FTPClient.setControlKeepAliveTimeout(10);
+            FTPClient.setDataTimeout(1000 * 60);
             FTPClient.enterLocalPassiveMode();
-
             FTPClient.changeWorkingDirectory(workDir);
             Log.d(TAG, String.valueOf(FileList()));
         } catch (Exception e) {
@@ -43,8 +52,8 @@ public class FTPclient {
         ArrayList<ContentsVO> filelists = new ArrayList<ContentsVO>();
         ContentsVO[] ftpFiles = new ContentsVO[0];
 
-        if (ftpFiles != null){
-            for(int i=0;i<ftpFiles.length;i++){
+        if (ftpFiles != null) {
+            for (int i = 0; i < ftpFiles.length; i++) {
                 ContentsVO file = contentsVO[i];
                 fileVO = new ContentsVO(file.getFileName(), file.getFileSize(), file.getRegDate());
                 filelists.add(fileVO);
@@ -55,7 +64,7 @@ public class FTPclient {
         return filelists;
     }
 
-    public boolean ftpDisconnect(){
+    public boolean ftpDisconnect() {
         boolean result = false;
         try {
             FTPClient.logout();
@@ -64,22 +73,24 @@ public class FTPclient {
         }
         return result;
     }
-    public boolean downloadFile(String fileName){
+
+    public boolean downloadFile(String fileName) {
         boolean result = false;
         try {
-                String remofile = workDir + fileName;
-                Log.d("파일 경로", remofile);
-                File down = new File(desDir , fileName);
-                boolean isExist = down.exists();
-                if(isExist){
-                    Log.d("FileCheck : " , "저장된 파일이 존재합니다.");
-                }
-                else {
-                    Log.d("파일 경로", down.getName());
-                    FileOutputStream fos = new FileOutputStream(down);
-                    result = FTPClient.retrieveFile(remofile, fos);
-                    fos.close();
-                }
+            FTPClient.setFileType(FTP.BINARY_FILE_TYPE);
+            String remofile = workDir + fileName;
+            Log.d("파일 경로", remofile);
+            File down = new File(desDir, fileName);
+            boolean isExist = down.exists();
+            if (isExist) {
+                Log.d("FileCheck : ", "저장된 파일이 존재합니다.");
+                Log.d("파일 크기", String.valueOf(down.length()));
+            } else {
+                Log.d("파일 경로", down.getName());
+                FileOutputStream fos = new FileOutputStream(down);
+                result = FTPClient.retrieveFile(remofile, fos);
+                fos.close();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
