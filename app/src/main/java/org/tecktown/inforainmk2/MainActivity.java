@@ -48,7 +48,6 @@ public class MainActivity extends AppCompatActivity {
     ImageView imageView2;
     VideoView videoView;
     Bitmap bitmap;
-    int index = 0;
 
     Handler mainHandler = new Handler();
     Handler videoHandler = new Handler();
@@ -73,39 +72,67 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 AnimThread thread = new AnimThread();
                 thread.start();
-                if(contentsVO.get(index).getFileType().equals("image")){
-                    videoView.setVisibility(View.INVISIBLE);
-                }else{
-                    videoView.setVisibility(View.VISIBLE);
-                }
             }
         });
 
     }
-
-    public class AnimThread extends Thread {
+    public class AnimThread extends Thread{
         @Override
-        public void run() {
+        public void run(){
+            int index = 0;
             while (true){
                 File file = new File(URL + contentsVO.get(index).getFileName());
                 System.out.println(String.valueOf(file));
                 System.out.println();
-                if (contentsVO.get(index).getFileType().equals("image")){
-                    controlHandler.sendEmptyMessage(SET_IMAGE);
-                    for (int i = 0; i<contentsVO.get(index).getPlayTime();i++) {
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
+                int finalIndex = index;
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        synchronized (this) {
+                            if (contentsVO.get(finalIndex).getFileType().equals("image")) {
+                                Uri uri = Uri.parse(Environment.getExternalStorageDirectory().getAbsolutePath() + "/seongmin/" + contentsVO.get(finalIndex).getFileName());
+                                imageView2.setImageURI(uri);
+                                bitmap = BitmapFactory.decodeFile(String.valueOf(uri));
+                                imageView2.setImageBitmap(bitmap);
+                            }
                         }
                     }
+                });
+                ++index;
+                try {
+                    if(contentsVO.get(index).getFileType().equals("image")){
+                        for (int i = 0; i<contentsVO.get(index).getPlayTime();i++)
+                        Thread.sleep(1000);
+                    }
+                } catch (InterruptedException e) {
+                    e.fillInStackTrace();
                 }
-                if(contentsVO.get(index).getFileType().equals("video")){
-                    controlHandler.sendEmptyMessage(SET_VIDEO);
-                }
-                index++;
 
-                if (index == contentsVO.size()){
+                videoHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (contentsVO.get(finalIndex).getFileType().equals("video")) {
+                            // VideoView : 동영상을 재생하는 뷰
+                            VideoView vv = (VideoView) findViewById(R.id.videoView);
+
+                            // MediaController : 특정 View 위에서 작동하는 미디어 컨트롤러 객체
+                            MediaController mc = new MediaController(getApplicationContext());
+                            vv.setMediaController(mc); // Video View 에 사용할 컨트롤러 지정
+
+                            String path = Environment.getExternalStorageDirectory()
+                                    .getAbsolutePath(); // 기본적인 절대경로 얻어오기
+
+                            // 절대 경로 = SDCard 폴더 = "storage/emulated/0"
+                            Log.d("test", "절대 경로 : " + path);
+
+                            vv.setVideoPath(path+"/seongmin/"+contentsVO.get(finalIndex).getFileName());
+                            // VideoView 로 재생할 영상
+                            vv.requestFocus(); // 포커스 얻어오기
+                            vv.start(); // 동영상 재생
+                        }
+                    }
+                });
+                if (index == 6){
                     index = 0;
                     continue;
                 }
@@ -113,35 +140,5 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    Handler controlHandler = new Handler(Looper.getMainLooper()) {
-        @Override
-        public void handleMessage(@NonNull Message msg) {
-            switch (msg.what) {
-                case SET_IMAGE:
-                    Uri uri = Uri.parse(Environment.getExternalStorageDirectory().getAbsolutePath() + "/seongmin/" + contentsVO.get(index).getFileName());
-                    imageView2.setImageURI(uri);
-                    bitmap = BitmapFactory.decodeFile(String.valueOf(uri));
-                    imageView2.setImageBitmap(bitmap);
-                case SET_VIDEO:
-                    // VideoView : 동영상을 재생하는 뷰
-                    VideoView vv = (VideoView) findViewById(R.id.videoView);
-
-                    // MediaController : 특정 View 위에서 작동하는 미디어 컨트롤러 객체
-                    MediaController mc = new MediaController(getApplicationContext());
-                    vv.setMediaController(mc); // Video View 에 사용할 컨트롤러 지정
-
-                    String path = Environment.getExternalStorageDirectory()
-                            .getAbsolutePath(); // 기본적인 절대경로 얻어오기
-
-                    // 절대 경로 = SDCard 폴더 = "storage/emulated/0"
-                    Log.d("test", "절대 경로 : " + path);
-
-                    vv.setVideoPath(path + "/seongmin/" + contentsVO.get(index).getFileName());
-                    // VideoView 로 재생할 영상
-                    vv.requestFocus(); // 포커스 얻어오기
-                    vv.start(); // 동영상 재생
-            }
-        }
-    };
 }
 
