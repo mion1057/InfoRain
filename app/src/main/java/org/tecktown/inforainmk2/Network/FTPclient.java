@@ -3,6 +3,7 @@ package org.tecktown.inforainmk2.Network;
 import android.os.Environment;
 import android.util.Log;
 
+import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.tecktown.inforainmk2.VO.ContentsVO;
 
@@ -28,11 +29,18 @@ public class FTPclient {
             FTPClient.setControlEncoding("UTF-8");
             FTPClient.connect(server, port);
             result = FTPClient.login(id, password);
+            FTPClient.setBufferSize(1024*1024);
+            FTPClient.setConnectTimeout(720000);
+            FTPClient.setDefaultTimeout(720000);
+            FTPClient.setKeepAlive(true);
+            FTPClient.setControlKeepAliveReplyTimeout(3000);
+            FTPClient.setControlKeepAliveTimeout(10);
+            FTPClient.setDataTimeout(1000 * 60);
             FTPClient.enterLocalPassiveMode();
-
             FTPClient.changeWorkingDirectory(workDir);
+
             Log.d(TAG, String.valueOf(FileList()));
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return result;
@@ -67,12 +75,14 @@ public class FTPclient {
     public boolean downloadFile(String fileName){
         boolean result = false;
         try {
+                FTPClient.setFileType(FTP.BINARY_FILE_TYPE);
                 String remofile = workDir + fileName;
                 Log.d("파일 경로", remofile);
                 File down = new File(desDir , fileName);
                 boolean isExist = down.exists();
                 if(isExist){
                     Log.d("FileCheck : " , "저장된 파일이 존재합니다.");
+                    Log.d("파일 크기", String.valueOf(down.length()));
                 }
                 else {
                     Log.d("파일 경로", down.getName());

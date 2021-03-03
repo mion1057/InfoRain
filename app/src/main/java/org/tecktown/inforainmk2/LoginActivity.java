@@ -148,8 +148,8 @@ public class LoginActivity extends AppCompatActivity {
 
         show();
 
-//        Intent intent = new Intent(this, MainActivity.class);
-//        startActivity(intent);
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
 
 
     }
@@ -165,15 +165,15 @@ public class LoginActivity extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                synchronized (this){
                 ftPclient.ftpConnect(ftp.getFtpIP(), ftp.getFtpPORT(), ftp.getFtpUser(), ftp.getFtpPw());
                 for (int i = 0; i < contentsVO.size(); i++) {
                     ftPclient.downloadFile(contentsVO.get(i).getFileName());
-                    }
                 }
             }
             }).start();
 
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
 
 //    private void Show2() {
 //        LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
