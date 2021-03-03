@@ -128,7 +128,6 @@ public class LoginActivity extends AppCompatActivity {
             HttpRequest httpRequest2 = new HttpRequest("GET", "http://192.168.0.207:8080/client/contents/1", handler1);
             httpRequest2.setBody("1");
             httpRequest2.start();
-
         }
 
 
@@ -170,14 +169,16 @@ public class LoginActivity extends AppCompatActivity {
                     ftPclient.downloadFile(contentsVO.get(i).getFileName());
                 }
             }
-            }).start();
+        }).start();
 
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
 
-//    private void Show2() {
-//        LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-//        LinearLayout loginLayout = (LinearLayout) vi.inflate(R.layout.login_alert, null);
+    }
+    private void LoginFailed() {
+        LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LinearLayout loginLayout = (LinearLayout) vi.inflate(R.layout.warning_alert, null);
 
+        new AlertDialog.Builder(this).setView(loginLayout).show();
     }
 }
