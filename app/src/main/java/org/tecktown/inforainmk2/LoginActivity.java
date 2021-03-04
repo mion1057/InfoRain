@@ -32,6 +32,7 @@ import org.tecktown.inforainmk2.Network.FTPclient;
 import org.tecktown.inforainmk2.Network.HttpRequest;
 import org.tecktown.inforainmk2.VO.ContentsVO;
 import org.tecktown.inforainmk2.VO.FtpInfoDto;
+import org.tecktown.inforainmk2.VO.ResponseBody;
 import org.tecktown.inforainmk2.VO.ResultCode;
 import org.tecktown.inforainmk2.VO.values;
 import org.w3c.dom.Text;
@@ -46,6 +47,7 @@ public class LoginActivity extends AppCompatActivity {
     TextView textResponse;
     FTPclient ftPclient = new FTPclient();
     ResultCode ftp = new ResultCode();
+    ResponseBody responseBody = new ResponseBody();
     static ArrayList<ContentsVO> contentsVO = new ArrayList<ContentsVO>();
     TextView correct;
 //    ArrayList<ContentsVO> contentsVO = values.contentsVO;
@@ -90,7 +92,6 @@ public class LoginActivity extends AppCompatActivity {
         EditText id = (EditText) findViewById(R.id.STBID);
         EditText pw = (EditText) findViewById(R.id.STBPassword);
 
-        textResponse = (TextView) findViewById(R.id.textResponse);
         correct = (TextView)findViewById(R.id.alert);
 
         Button butSend = (Button) findViewById(R.id.signin);
@@ -112,21 +113,23 @@ public class LoginActivity extends AppCompatActivity {
 
     void responseSuccessd(String response) {
         Log.d("login", "responseSuccessd@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-        textResponse.setText(response);
         Log.d("login", "Success");
 
         Gson gson = new Gson();
         JsonParser parser = new JsonParser();
 
         JsonObject jsonObject = (JsonObject) parser.parse(response);
+        JsonElement jsonElement = jsonObject.get("responseBody");
+
+        responseBody = gson.fromJson(jsonElement, ResponseBody.class);
 
         Log.d("ftp", jsonObject.toString());
 
         ftp = gson.fromJson(jsonObject, ResultCode.class);
 
         if (ftp != null) {
-            HttpRequest httpRequest2 = new HttpRequest("GET", "http://dbs267.iptime.org:8080/client/contents/1", handler1);
-            httpRequest2.setBody("1");
+            HttpRequest httpRequest2 = new HttpRequest("GET", "http://dbs267.iptime.org:8080/client/contents/" + responseBody.getGroupCode(), handler1);
+            httpRequest2.setBody(responseBody.getGroupCode());
             httpRequest2.start();
 
         }
