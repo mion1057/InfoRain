@@ -101,7 +101,8 @@ public class MainActivity extends AppCompatActivity {
                         if (contentsVO.get(index).getFileType().equals("image")) {
                             for (int i = 0; i < contentsVO.get(index).getPlayTime(); i++)
                                 Thread.sleep(1000);
-                        }
+                            }
+                            imageView2.setVisibility(View.INVISIBLE);
                     } catch (InterruptedException e) {
                         e.fillInStackTrace();
                     }
@@ -110,33 +111,35 @@ public class MainActivity extends AppCompatActivity {
                     videoHandler.post(new Runnable() {
                         @Override
                         public void run() {
-                            imageView2.setVisibility(View.INVISIBLE);
-                            vv.setVisibility(View.VISIBLE);
-                            // VideoView : 동영상을 재생하는 뷰
-                            VideoView vv = (VideoView) findViewById(R.id.videoView);
+                            synchronized (this) {
+                                imageView2.setVisibility(View.INVISIBLE);
+                                vv.setVisibility(View.VISIBLE);
+                                // VideoView : 동영상을 재생하는 뷰
+                                VideoView vv = (VideoView) findViewById(R.id.videoView);
 
-                            // MediaController : 특정 View 위에서 작동하는 미디어 컨트롤러 객체
-                            MediaController mc = new MediaController(getApplicationContext());
-                            vv.setMediaController(mc); // Video View 에 사용할 컨트롤러 지정
+                                // MediaController : 특정 View 위에서 작동하는 미디어 컨트롤러 객체
+                                MediaController mc = new MediaController(getApplicationContext());
+                                vv.setMediaController(mc); // Video View 에 사용할 컨트롤러 지정
 
-                            String path = Environment.getExternalStorageDirectory()
-                                    .getAbsolutePath(); // 기본적인 절대경로 얻어오기
+                                String path = Environment.getExternalStorageDirectory()
+                                        .getAbsolutePath(); // 기본적인 절대경로 얻어오기
 
-                            // 절대 경로 = SDCard 폴더 = "storage/emulated/0"
-                            Log.d("test", "절대 경로 : " + path);
+                                // 절대 경로 = SDCard 폴더 = "storage/emulated/0"
+                                Log.d("test", "절대 경로 : " + path);
 
-                            vv.setVideoPath(path + "/seongmin/" + contentsVO.get(finalIndex).getFileName());
-                            // VideoView 로 재생할 영상
-                            vv.requestFocus(); // 포커스 얻어오기
-                            vv.start(); // 동영상 재생
+                                vv.setVideoPath(path + "/seongmin/" + contentsVO.get(finalIndex).getFileName());
+                                // VideoView 로 재생할 영상
+                                vv.requestFocus(); // 포커스 얻어오기
+                                vv.start(); // 동영상 재생
 
-                            vv.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                                @Override
-                                public void onCompletion(MediaPlayer mp) {
-                                    Toast.makeText(getApplicationContext(), "동영상 재생이 완료되었습니다.", Toast.LENGTH_LONG).show();
-                                    vv.setVisibility(View.INVISIBLE);
-                                }
-                            });
+                                vv.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                    @Override
+                                    public void onCompletion(MediaPlayer mp) {
+                                        Toast.makeText(getApplicationContext(), "동영상 재생이 완료되었습니다.", Toast.LENGTH_LONG).show();
+                                        vv.setVisibility(View.INVISIBLE);
+                                    }
+                                });
+                            }
                         }
                     });
                 }
