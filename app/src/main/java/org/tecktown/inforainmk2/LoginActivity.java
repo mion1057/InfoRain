@@ -129,9 +129,12 @@ public class LoginActivity extends AppCompatActivity {
 
         if (ftp != null) {
 <<<<<<< HEAD
+<<<<<<< HEAD
             HttpRequest httpRequest2 = new HttpRequest("GET", "http://dbs267.iptime.org:8080/client/contents/" + responseBody.getGroupCode(), handler1);
             httpRequest2.setBody(responseBody.getGroupCode());
 =======
+=======
+>>>>>>> parent of a24d16e (mion1057)
             HttpRequest httpRequest2 = new HttpRequest("GET", "http://192.168.0.207:8080/client/contents/1", handler1);
             httpRequest2.setBody("1");
 >>>>>>> parent of a24d16e (mion1057)
