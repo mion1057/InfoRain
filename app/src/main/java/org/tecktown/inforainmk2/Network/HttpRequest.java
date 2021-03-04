@@ -118,7 +118,7 @@ public class HttpRequest extends Thread {
         paramBuffer.append(value);
     }
 
-    public void setBody(Object body) {
+    public void setBody(String body) {
         if (paramBuffer == null) paramBuffer = new StringBuffer();
         paramBuffer.append(body);
     }
