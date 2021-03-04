@@ -90,7 +90,6 @@ public class LoginActivity extends AppCompatActivity {
         EditText id = (EditText) findViewById(R.id.STBID);
         EditText pw = (EditText) findViewById(R.id.STBPassword);
 
-        textResponse = (TextView) findViewById(R.id.textResponse);
         correct = (TextView)findViewById(R.id.alert);
 
         Button butSend = (Button) findViewById(R.id.signin);
@@ -112,7 +111,6 @@ public class LoginActivity extends AppCompatActivity {
 
     void responseSuccessd(String response) {
         Log.d("login", "responseSuccessd@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-        textResponse.setText(response);
         Log.d("login", "Success");
 
         Gson gson = new Gson();
