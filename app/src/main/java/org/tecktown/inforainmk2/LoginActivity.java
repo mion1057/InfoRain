@@ -97,7 +97,7 @@ public class LoginActivity extends AppCompatActivity {
         butSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                HttpRequest httpRequest = new HttpRequest("POST", "http://dbs267.iptime.org:8080/client/connect", handler);
+                HttpRequest httpRequest = new HttpRequest("POST", "http://192.168.0.207:8080/client/connect", handler);
                 String json = "{\"stbId\":\"" + id.getText().toString() + "\", \"stbPw\":\"" + pw.getText().toString() + "\"}";
                 httpRequest.setBody(json);
                 httpRequest.start();
@@ -125,7 +125,7 @@ public class LoginActivity extends AppCompatActivity {
         ftp = gson.fromJson(jsonObject, ResultCode.class);
 
         if (ftp != null) {
-            HttpRequest httpRequest2 = new HttpRequest("GET", "http://dbs267.iptime.org:8080/client/contents/1", handler1);
+            HttpRequest httpRequest2 = new HttpRequest("GET", "http://192.168.0.207:8080/client/contents/1", handler1);
             httpRequest2.setBody("1");
             httpRequest2.start();
 
