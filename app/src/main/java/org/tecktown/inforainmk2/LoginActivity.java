@@ -32,6 +32,7 @@ import org.tecktown.inforainmk2.Network.FTPclient;
 import org.tecktown.inforainmk2.Network.HttpRequest;
 import org.tecktown.inforainmk2.VO.ContentsVO;
 import org.tecktown.inforainmk2.VO.FtpInfoDto;
+import org.tecktown.inforainmk2.VO.ResponseBody;
 import org.tecktown.inforainmk2.VO.ResultCode;
 import org.tecktown.inforainmk2.VO.values;
 import org.w3c.dom.Text;
@@ -46,6 +47,7 @@ public class LoginActivity extends AppCompatActivity {
     TextView textResponse;
     FTPclient ftPclient = new FTPclient();
     ResultCode ftp = new ResultCode();
+    ResponseBody responseBody = new ResponseBody();
     static ArrayList<ContentsVO> contentsVO = new ArrayList<ContentsVO>();
     TextView correct;
 //    ArrayList<ContentsVO> contentsVO = values.contentsVO;
@@ -117,14 +119,16 @@ public class LoginActivity extends AppCompatActivity {
         JsonParser parser = new JsonParser();
 
         JsonObject jsonObject = (JsonObject) parser.parse(response);
+        JsonElement element = jsonObject.get("responseBody");
+
 
         Log.d("ftp", jsonObject.toString());
 
         ftp = gson.fromJson(jsonObject, ResultCode.class);
 
         if (ftp != null) {
-            HttpRequest httpRequest2 = new HttpRequest("GET", "http://192.168.0.207:8080/client/contents/1", handler1);
-            httpRequest2.setBody("1");
+            HttpRequest httpRequest2 = new HttpRequest("GET", "http://192.168.0.207:8080/client/contents/"+ responseBody.getGroupCode() , handler1);
+            httpRequest2.setBody(responseBody.getGroupCode());
             httpRequest2.start();
 
         }
